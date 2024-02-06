@@ -14,6 +14,14 @@ export class CoursesService {
   loadAllCourses(): Observable<Course[]> {
     return this.http.get<Course[]>("/api/courses").pipe(
       map(res => res["payload"]),
+      // Este operador almacena el ultimo estado y lo replica a los nuevos subscritores, evitando asi que se produsca
+      // un nuevo llamado al recurso http
+      shareReplay()
+    );
+  }
+
+  saveCourse(courseId:String, changes:Partial<Course>):Observable<any>{
+    return this.http.put(`api/courses/${courseId}`, changes).pipe(
       shareReplay()
     );
   }

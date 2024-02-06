@@ -5,13 +5,16 @@
   <mat-tab-group>
 
     <mat-tab label="Beginners">
-
-      <courses-card-list [courses]="beginnerCourses$ | async"></courses-card-list>
+      <!-- El pipe async no solo se subscribe al observable para actualizarlo en el template,
+           si no que cuando el componente es destruido este de desuscribe del observable  -->
+      <courses-card-list [courses]="beginnerCourses$ | async"
+      (coursesChanged)="reloadCourses()"></courses-card-list>
 
     </mat-tab>
 
     <mat-tab label="Advanced">
-      <courses-card-list [courses]="advancedCourses$ | async"></courses-card-list>
+      <courses-card-list [courses]="advancedCourses$ | async"
+      (coursesChanged)="reloadCourses()"></courses-card-list>
     </mat-tab>
 
   </mat-tab-group>
