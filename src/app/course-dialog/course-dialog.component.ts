@@ -6,11 +6,18 @@ import * as moment from 'moment';
 import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 import { CoursesService } from '../services/courses.service';
+import { LoadingService } from '../loading/loading.service';
 
 @Component({
   selector: 'course-dialog',
   templateUrl: './course-dialog.component.html',
-  styleUrls: ['./course-dialog.component.css']
+  styleUrls: ['./course-dialog.component.css'],
+  //  Este componente, tira error al tratar de injectar el loading service, porque quien lo invoca es angular material,
+  //  esto lo deja fuera del alcance de app.component, que es el que tiene una instancia ya creada del servicio.
+  //  Al agregar a providers el LoadingService se crea una instancia aparte que puede injectar en el componente
+  providers:[
+    LoadingService
+  ]
 })
 export class CourseDialogComponent implements AfterViewInit {
 
@@ -22,6 +29,7 @@ export class CourseDialogComponent implements AfterViewInit {
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<CourseDialogComponent>,
     private coursesService: CoursesService,
+    private loadingService: LoadingService,
     @Inject(MAT_DIALOG_DATA) course: Course) {
 
     this.course = course;
@@ -41,7 +49,10 @@ export class CourseDialogComponent implements AfterViewInit {
 
   save() {
     const changes = this.form.value;
-    this.coursesService.saveCourse(this.course.id, changes).subscribe((val)=>{
+
+    const saveCourse$ = this.coursesService.saveCourse(this.course.id, changes);
+
+    this.loadingService.showLoaderUntilCompleted(saveCourse$).subscribe((val) => {
       this.dialogRef.close(val);
     });
 
