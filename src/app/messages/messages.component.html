@@ -1,8 +1,12 @@
-<div class="messages-container" *ngIf="showMessages">
-  <div class="message" *ngFor="let error of errors">
-    {{error}}
+<!-- <ng-container></ng-container> nos permite usar ng-if o un ng-for
+  y que este no genere un nodo redundante al DOM
+  https://www.digitalocean.com/community/tutorials/angular-ng-container-element
+-->
+<ng-container *ngIf="(errors$ | async) as errors">
+  <div class="messages-container" *ngIf="showMessages">
+    <div class="message" *ngFor="let error of errors">
+      {{error}}
+    </div>
+    <mat-icon class="close" (click)="onClose()">close</mat-icon>
   </div>
-
-  <mat-icon class="close" (click)="onClose()">close</mat-icon>
-
-</div>
+</ng-container>
