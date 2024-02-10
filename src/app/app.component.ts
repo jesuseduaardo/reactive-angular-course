@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import { LoadingService } from './loading/loading.service';
 import { MessagesService } from './messages/messages.service';
+import { AuthStoreService } from './services/auth.store.service';
 
 
 
@@ -10,13 +11,13 @@ import { MessagesService } from './messages/messages.service';
   styleUrls: ['./app.component.css'],
   providers:[
     //Significa que este una instancia de este servicio estara disponible para este componente y sus hijos
-    LoadingService,
-    MessagesService
+    //LoadingService,
+    //MessagesService
   ]
 })
 export class AppComponent implements  OnInit {
 
-    constructor() {
+    constructor(public auth:AuthStoreService) {
 
     }
 
@@ -26,7 +27,7 @@ export class AppComponent implements  OnInit {
     }
 
   logout() {
-
+    this.auth.logout();
   }
 
 }

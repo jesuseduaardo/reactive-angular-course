@@ -8,6 +8,7 @@ import { throwError } from 'rxjs';
 import { CoursesService } from '../services/courses.service';
 import { LoadingService } from '../loading/loading.service';
 import { MessagesService } from '../messages/messages.service';
+import { CoursesStoreService } from '../services/courses.store.service';
 
 @Component({
   selector: 'course-dialog',
@@ -30,8 +31,7 @@ export class CourseDialogComponent implements AfterViewInit {
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<CourseDialogComponent>,
-    private coursesService: CoursesService,
-    private loadingService: LoadingService,
+    private coursesStoreService: CoursesStoreService,
     private messagesService: MessagesService,
     @Inject(MAT_DIALOG_DATA) course: Course) {
 
@@ -52,24 +52,8 @@ export class CourseDialogComponent implements AfterViewInit {
 
   save() {
     const changes = this.form.value;
-
-    const saveCourse$ = this.coursesService.saveCourse(this.course.id, changes).pipe(
-      // catchError necesita retornar un observable
-      // es por eso que se retorna un throwError que crea un observable que no retorna items al observer
-      // si no mas bien una notificacion del error, que vendria a reemplazar al observable emitido (o que emitiria)
-      // el metodo saveCourse de coursesService
-      catchError(err => {
-        const message = "Could not save course";
-        console.log(message, err);
-        this.messagesService.showErrors(message);
-        return throwError(err);
-      })
-    );
-
-    this.loadingService.showLoaderUntilCompleted(saveCourse$).subscribe((val) => {
-      this.dialogRef.close(val);
-    });
-
+    this.coursesStoreService.saveCourse(this.course.id, changes).subscribe();
+    this.dialogRef.close(changes);
   }
 
   close() {
